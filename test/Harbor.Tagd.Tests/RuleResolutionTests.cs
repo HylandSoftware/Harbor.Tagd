@@ -27,39 +27,7 @@ namespace Harbor.Tagd.Tests
 			}
 			catch(Exception ex)
 			{
-				Assert.Equal("The rule provider did not return any tag rules", ex.Message);
-			}
-		}
-
-		[Fact]
-		public async Task ThrowsForNullTagRuleSet()
-		{
-			Rules.Setup(r => r.Load()).Returns(new RuleSet { Rules = null });
-
-			try
-			{
-				await _sut.Process();
-				Assert.True(false, "Expected an exception to be thrown");
-			}
-			catch(Exception ex)
-			{
-				Assert.Equal("The rule provider did not return any tag rules", ex.Message);
-			}
-		}
-
-		[Fact]
-		public async Task ThrowsForEmptyTagRuleSet()
-		{
-			Rules.Setup(r => r.Load()).Returns(new RuleSet { Rules = new List<Rule>() });
-
-			try
-			{
-				await _sut.Process();
-				Assert.True(false, "Expected an exception to be thrown");
-			}
-			catch (Exception ex)
-			{
-				Assert.Equal("The rule provider did not return any tag rules", ex.Message);
+				Assert.Equal("The rule provider did not return a default rule", ex.Message);
 			}
 		}
 

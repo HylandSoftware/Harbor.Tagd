@@ -8,6 +8,7 @@
 		public string Verbosity { get; set; } = "info";
 		public string ChatHook { get; set; }
 
+		public string ConfigFile { get; set; }
 		public string ConfigServer { get; set; } = "http://localhost:8888";
 		public string ConfigUser { get; set; }
 		public string ConfigPassword { get; set; }

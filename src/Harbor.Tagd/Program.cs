@@ -1,4 +1,5 @@
-﻿using Harbor.Tagd.Notifications;
+﻿using Harbor.Tagd.Extensions;
+using Harbor.Tagd.Notifications;
 using Harbor.Tagd.Rules;
 using Harbor.Tagd.Util;
 using Harbormaster;
@@ -43,6 +44,7 @@ namespace Harbor.Tagd
 				var config = new ConfigurationBuilder()
 					.AddCommandLine(args, new Dictionary<string, string>
 					{
+						{ "--config-file", "ConfigFile" },
 						{ "--config-server", "ConfigServer" },
 						{ "--config-user", "ConfigUser" },
 						{ "--config-password", "ConfigPassword" },
@@ -57,10 +59,7 @@ namespace Harbor.Tagd
 
 				logLevel.MinimumLevel = ParseVerbosity(settings.Verbosity);
 
-				var engine = new TagEngine(
-					new HarborClient(NormalizeEndpointUrl(settings.Endpoint)),
-					settings,
-					Log.ForContext<TagEngine>(),
+				var configProvider = settings.ConfigFile.IsNullOrEmpty() ?
 					new ConfigServerRuleProvider(
 						new ConfigServerClientSettings
 						{
@@ -73,7 +72,13 @@ namespace Harbor.Tagd
 							Password = settings.ConfigPassword
 						},
 						new SerilogLoggerFactory()
-					),
+					) : (IRuleProvider) new FilesystemRuleProvider(settings.ConfigFile);
+
+				var engine = new TagEngine(
+					new HarborClient(NormalizeEndpointUrl(settings.Endpoint)),
+					settings,
+					Log.ForContext<TagEngine>(),
+					configProvider,
 					settings.SlackWebhook == null ? null : new SlackResultNotifier(settings)
 				);
 
