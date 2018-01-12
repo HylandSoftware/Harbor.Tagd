@@ -36,8 +36,8 @@ The easiest way to get up and running is to use the Docker Container:
 ```bash
 docker run -it --rm -v config.yml:/config.yml hcr.io/nlowe/tagd \
     --config-file /config.yml \
-    --endpoint <your harbor server>
-    --user <service user>
+    --endpoint <your harbor server> \
+    --user <service user> \
     --password <service user password>
 ```
 
