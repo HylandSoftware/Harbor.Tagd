@@ -37,12 +37,37 @@ The easiest way to get up and running is to use the Docker Container:
 docker run -it --rm -v config.yml:/config.yml hcr.io/nlowe/tagd \
     --config-file /config.yml \
     --endpoint <your harbor server>
-    --username <service user>
+    --user <service user>
     --password <service user password>
 ```
 
 This will perform a dry run using the rules specified in `config.yml`. To
-actually delete tags, invoke with `--report-only=false`.
+actually delete tags, invoke with `--destructive`.
+
+### Usage
+
+```text
+Usage: Harbor.Tagd [ -h|--help ] [ --version ] --endpoint -u|--userU -p|--passwordP [ -v|--verbosity V ] [ --config-file  ] [ --config-server  ] [ --config-user  ] [ --config-password  ] [ --destructive ] [ --dump-rules ] [ --notify-slack  ]
+
+ Tag Cleanup daemon for VMware Harbor Registries
+
+Required Arguments:
+ --endpoint         The harbor registry to connect to
+ -p, --password     The password for the user connecting to harbor
+ -u, --user         The user to connect to harbor as
+
+Optional Arguments:
+ --config-file      The config file to parse
+ --config-server    The springboot config server to get configuration from
+ --config-user      The user to login to the springboot config server as
+ --config-password  The password for the springboot config server user
+ --destructive      Actually delete tags instead of generating a report
+ --dump-rules       Print the rules that would be used and exit
+ --notify-slack     Post results to this slack-compatible webhook
+ -h, --help         Display this help document.
+ -v, --verbosity    How verbose should logging output be
+ --version          Displays the version of the current executable.
+```
 
 ### Configuration
 
