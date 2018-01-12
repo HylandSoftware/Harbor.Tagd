@@ -1,6 +1,8 @@
-﻿namespace Harbor.Tagd
+﻿using System;
+
+namespace Harbor.Tagd
 {
-	public class ProcessResult
+	public class ProcessResult : IEquatable<ProcessResult>
 	{
 		public readonly int RemovedTags;
 		public readonly int IgnoredTags;
@@ -17,12 +19,11 @@
 			IgnoredProjects = ignoredProjects;
 		}
 
-		public static ProcessResult operator +(ProcessResult a, ProcessResult b) =>
-			new ProcessResult(
-				a.RemovedTags + b.RemovedTags,
-				a.IgnoredTags + b.IgnoredTags,
-				a.IgnoredRepos + b.IgnoredRepos,
-				a.IgnoredProjects + b.IgnoredProjects
-			);
+		public bool Equals(ProcessResult other) =>
+			other != null &&
+			RemovedTags == other.RemovedTags &&
+			IgnoredTags == other.IgnoredTags &&
+			IgnoredRepos == other.IgnoredRepos &&
+			IgnoredProjects == other.IgnoredProjects;
 	}
 }

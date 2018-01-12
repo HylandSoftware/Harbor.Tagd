@@ -3,6 +3,7 @@ using Harbor.Tagd.Notifications;
 using Harbor.Tagd.Rules;
 using Harbormaster;
 using Moq;
+using System;
 
 namespace Harbor.Tagd.Tests
 {
@@ -16,13 +17,21 @@ namespace Harbor.Tagd.Tests
 		protected readonly Mock<IResultNotifier> NotificationHandler = new Mock<IResultNotifier>();
 
 		protected readonly HarborSettings Settings;
-		protected readonly TagEngine _sut;
+
+		private readonly Lazy<TagEngine> _sutImpl;
+		protected TagEngine _sut
+		{
+			get
+			{
+				return _sutImpl.Value;
+			}
+		}
 
 		public TagEngineTest()
 		{
 			_fixture = new Fixture();
 			Settings = _fixture.Freeze<HarborSettings>();
-			_sut = new TagEngine(Harbor.Object, Settings, Serilog.Object, Rules.Object, NotificationHandler.Object);
+			_sutImpl = new Lazy<TagEngine>(() => new TagEngine(Harbor.Object, Settings, Serilog.Object, Rules.Object, NotificationHandler.Object));
 		}
 	}
 }

@@ -86,6 +86,7 @@ namespace Harbor.Tagd
 					foreach(var tag in TagSet.ToRemove)
 					{
 						Log.Warning("Deleting Tag {@tag}", tag);
+						await _harbor.DeleteTag(tag.Repository, tag.Name);
 					}
 				}
 
@@ -163,7 +164,7 @@ namespace Harbor.Tagd
 					Log.Information("Tag {repo}:{name} skipped due to global ignore rules", t.Repository, t.Name);
 					TagSet.ToKeep.Add(t);
 				}
-				else if (rules?.SelectMany(rule => rule.Ignore ?? new string[0])?.Any(ignore => t.Name.Equals(ignore, StringComparison.Ordinal)) ?? false)
+				else if ((_ruleSet.DefaultRule?.Ignore ?? new string[0]).Union(rules?.SelectMany(rule => rule.Ignore ?? new string[0]))?.Any(ignore => t.Name.Equals(ignore, StringComparison.Ordinal)) ?? false)
 				{
 					Log.Information("Tag {repo}:{name} skipped because it was found in an ignore list that applies to {repo}", t.Repository, t.Name, r.Name);
 					TagSet.ToKeep.Add(t);
