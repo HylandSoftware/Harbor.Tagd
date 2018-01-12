@@ -13,7 +13,7 @@ namespace Harbor.Tagd.Tests
 		[Fact]
 		public async Task DoesNotDeleteOnDryRun()
 		{
-			Settings.ReportOnly = true;
+			Settings.Nondestructive = true;
 
 			var tags = _fixture.CreateMany<Tag>(10);
 			var project = _fixture.Create<Project>();

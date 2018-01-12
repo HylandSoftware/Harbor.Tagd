@@ -8,9 +8,9 @@ namespace Harbor.Tagd.Notifications
 {
 	internal class SlackResultNotifier : IResultNotifier
 	{
-		private readonly HarborSettings _settings;
+		private readonly ApplicationSettings _settings;
 
-		public SlackResultNotifier(HarborSettings settings) => _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+		public SlackResultNotifier(ApplicationSettings settings) => _settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
 		public async Task Notify(ProcessResult result)
 		{
@@ -22,8 +22,8 @@ namespace Harbor.Tagd.Notifications
 					{
 						new
 						{
-							fallback = $"{(_settings.ReportOnly ? "DRY RUN - " : "")}Tag cleanup complete on {_settings.Endpoint}: Removed {result.RemovedTags} tags, ignored {result.IgnoredTags} tags, {result.IgnoredRepos} repos, and {result.IgnoredProjects} projects",
-							title = $"{(_settings.ReportOnly ? "DRY RUN - " : "")}Tag cleanup complete on {_settings.Endpoint}",
+							fallback = $"{(_settings.Nondestructive ? "DRY RUN - " : "")}Tag cleanup complete on {_settings.Endpoint}: Removed {result.RemovedTags} tags, ignored {result.IgnoredTags} tags, {result.IgnoredRepos} repos, and {result.IgnoredProjects} projects",
+							title = $"{(_settings.Nondestructive ? "DRY RUN - " : "")}Tag cleanup complete on {_settings.Endpoint}",
 							title_link = _settings.Endpoint.ToLower().StartsWith("http") ? _settings.Endpoint : $"https://{_settings.Endpoint}",
 							fields = new[] {
 								new { title = "Removed Tags", value = result.RemovedTags.ToString(), @short = true },

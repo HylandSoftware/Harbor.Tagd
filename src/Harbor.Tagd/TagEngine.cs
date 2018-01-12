@@ -13,7 +13,7 @@ namespace Harbor.Tagd
 	public class TagEngine
 	{
 		private readonly IHarborClient _harbor;
-		private readonly HarborSettings _settings;
+		private readonly ApplicationSettings _settings;
 		private readonly Serilog.ILogger Log;
 		private readonly bool _destructive;
 		private readonly IRuleProvider _ruleProvider;
@@ -23,7 +23,7 @@ namespace Harbor.Tagd
 		
 		private RuleSet _ruleSet;
 
-		public TagEngine(IHarborClient harbor, HarborSettings settings, Serilog.ILogger log, IRuleProvider rules, IResultNotifier notifications)
+		public TagEngine(IHarborClient harbor, ApplicationSettings settings, Serilog.ILogger log, IRuleProvider rules, IResultNotifier notifications)
 		{
 			 _harbor = harbor ?? throw new ArgumentNullException(nameof(harbor));
 			_settings = settings ?? throw new ArgumentNullException(nameof(settings));
@@ -31,7 +31,7 @@ namespace Harbor.Tagd
 			_ruleProvider = rules ?? throw new ArgumentNullException(nameof(rules));
 			_notification = notifications;
 
-			_destructive = !_settings.ReportOnly;
+			_destructive = !_settings.Nondestructive;
 		}
 
 		public async Task Process()
@@ -48,7 +48,7 @@ namespace Harbor.Tagd
 			}
 			else
 			{
-				Log.Warning("Running in report-only mode. To delete tags, run with --report-only=false");
+				Log.Warning("Running in report-only mode. To delete tags, run with --destructive");
 			}
 
 			try

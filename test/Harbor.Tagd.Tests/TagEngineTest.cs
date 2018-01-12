@@ -16,7 +16,7 @@ namespace Harbor.Tagd.Tests
 		protected readonly Mock<IRuleProvider> Rules = new Mock<IRuleProvider>();
 		protected readonly Mock<IResultNotifier> NotificationHandler = new Mock<IResultNotifier>();
 
-		protected readonly HarborSettings Settings;
+		protected readonly ApplicationSettings Settings;
 
 		private readonly Lazy<TagEngine> _sutImpl;
 		protected TagEngine _sut
@@ -30,7 +30,7 @@ namespace Harbor.Tagd.Tests
 		public TagEngineTest()
 		{
 			_fixture = new Fixture();
-			Settings = _fixture.Freeze<HarborSettings>();
+			Settings = _fixture.Freeze<ApplicationSettings>();
 			_sutImpl = new Lazy<TagEngine>(() => new TagEngine(Harbor.Object, Settings, Serilog.Object, Rules.Object, NotificationHandler.Object));
 		}
 	}

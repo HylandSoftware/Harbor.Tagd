@@ -18,7 +18,7 @@ namespace Harbor.Tagd.Tests.Rules
 
 		public RuleTests()
 		{
-			Settings.ReportOnly = false;
+			Settings.Nondestructive = false;
 
 			_project = _fixture.Create<Project>();
 			_repository = _fixture.Create<Repository>();

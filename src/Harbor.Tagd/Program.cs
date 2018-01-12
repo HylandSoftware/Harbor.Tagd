@@ -1,16 +1,15 @@
-﻿using Harbor.Tagd.Extensions;
+﻿using clipr;
+using Harbor.Tagd.Extensions;
 using Harbor.Tagd.Notifications;
 using Harbor.Tagd.Rules;
 using Harbor.Tagd.Util;
 using Harbormaster;
 using Harbormaster.Models;
-using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 using Steeltoe.Extensions.Configuration.ConfigServer;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -41,21 +40,7 @@ namespace Harbor.Tagd
 
 			try
 			{
-				var config = new ConfigurationBuilder()
-					.AddCommandLine(args, new Dictionary<string, string>
-					{
-						{ "--config-file", "ConfigFile" },
-						{ "--config-server", "ConfigServer" },
-						{ "--config-user", "ConfigUser" },
-						{ "--config-password", "ConfigPassword" },
-						{ "--report-only", "ReportOnly" },
-						{ "--dump-rules", "DumpRules" },
-						{ "--notify-slack", "SlackWebhook" }
-					})
-					.Build();
-
-				var settings = new HarborSettings();
-				config.Bind(settings);
+				var settings = CliParser.Parse<ApplicationSettings>(args);
 
 				logLevel.MinimumLevel = ParseVerbosity(settings.Verbosity);
 
@@ -86,6 +71,10 @@ namespace Harbor.Tagd
 				sw.Start();
 				await engine.Process();
 				Log.Information("Finished in {elapsed}", sw.Elapsed);
+			}
+			catch(clipr.Core.ParserExit)
+			{
+				// Don't throw an exception if someone calls help
 			}
 			catch(Exception ex)
 			{
