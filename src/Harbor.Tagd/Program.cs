@@ -54,7 +54,12 @@ namespace Harbor.Tagd
 							Environment = ENVIRONMENT,
 							Uri = settings.ConfigServer,
 							Username = settings.ConfigUser,
-							Password = settings.ConfigPassword
+							Password = settings.ConfigPassword,
+							RetryAttempts = 5,
+							RetryEnabled = true,
+							RetryInitialInterval = 3000,
+							RetryMaxInterval = 10000,
+							RetryMultiplier = 1.5
 						},
 						new SerilogLoggerFactory()
 					) : (IRuleProvider) new FilesystemRuleProvider(settings.ConfigFile);
