@@ -159,7 +159,11 @@ namespace Harbor.Tagd
 			var rules = repoRules.ToList();
 			foreach (var t in await _harbor.GetTags(r.Name))
 			{
-				if (_ruleSet?.IgnoreGlobally?.Tags.Any(rule => t.Name.Equals(rule, StringComparison.Ordinal)) ?? false)
+				if (string.IsNullOrEmpty(t.Digest))
+				{
+					Log.Warning("Tag {repo}:{name} does not have a digest and was likely corrupted during a delete operation. This tag will be skipped. See https://github.com/vmware/harbor/issues/4214 for details", t.Repository, t.Name);
+				}
+				else if (_ruleSet?.IgnoreGlobally?.Tags.Any(rule => t.Name.Equals(rule, StringComparison.Ordinal)) ?? false)
 				{
 					Log.Information("Tag {repo}:{name} skipped due to global ignore rules", t.Repository, t.Name);
 					TagSet.ToKeep.Add(t);
