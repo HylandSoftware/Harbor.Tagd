@@ -95,6 +95,12 @@ namespace Harbor.Tagd
 
 				await (_notification?.Notify(result) ?? Task.CompletedTask);
 			}
+			catch(Exception ex)
+			{
+				await (_notification?.NotifyUnhandledException(ex) ?? Task.CompletedTask);
+
+				throw;
+			}
 			finally
 			{
 				if(!string.IsNullOrEmpty(_harbor.SessionToken))
