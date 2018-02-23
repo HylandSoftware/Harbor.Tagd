@@ -138,5 +138,21 @@ namespace Harbor.Tagd.Tests.Rules
 			Harbor.Verify(h => h.DeleteTag(latest.Repository, latest.Name), Times.Never);
 			Harbor.Verify(h => h.DeleteTag(dup.Repository, dup.Name), Times.Never);
 		}
+
+		[Fact]
+		public async Task SkipsHarbor14CorruptTags()
+		{
+			var tag = _fixture.Build<Tag>()
+				.WithAutoProperties()
+				.Without(t => t.Digest)
+				.Create();
+
+			Harbor.Setup(h => h.GetTags(It.IsAny<string>())).ReturnsAsync(new[] { tag });
+
+			await _sut.Process();
+
+			Serilog.Verify(l => l.Warning("Tag {repo}:{name} does not have a digest and was likely corrupted during a delete operation. This tag will be skipped. See https://github.com/vmware/harbor/issues/4214 for details", tag.Repository, tag.Name), Times.Once);
+			Harbor.Verify(h => h.DeleteTag(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+		}
 	}
 }
