@@ -3,7 +3,7 @@
 
 ### Cake ###
 tools/*
-!tools/packages.config
+!tools/cake.csproj
 
 ### Csharp ###
 ## Ignore Visual Studio temporary files, build results, and

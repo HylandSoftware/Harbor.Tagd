@@ -1,26 +1,26 @@
 #!/usr/bin/env bash
-
 ##########################################################################
 # This is the Cake bootstrapper script for Linux and OS X.
-# This file was downloaded from https://github.com/cake-build/resources
+# This file was based off of https://github.com/cake-build/resources
 # Feel free to change this file to fit your needs.
 ##########################################################################
 
-# Define directories.
-SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-TOOLS_DIR=$SCRIPT_DIR/tools
-NUGET_EXE=$TOOLS_DIR/nuget.exe
-CAKE_EXE=$TOOLS_DIR/Cake/Cake.exe
-PACKAGES_CONFIG=$TOOLS_DIR/packages.config
-PACKAGES_CONFIG_MD5=$TOOLS_DIR/packages.config.md5sum
+set -euo pipefail
 
-# Define md5sum or md5 depending on Linux/OSX
-MD5_EXE=
-if [[ "$(uname -s)" == "Darwin" ]]; then
-    MD5_EXE="md5 -r"
-else
-    MD5_EXE="md5sum"
-fi
+command -v dotnet >/dev/null 2>&1 || { 
+    echo >&2 "This project requires dotnet core but it could not be found"
+    echo >&2 "Please install dotnet core and ensure it is available on your PATH"
+    exit 1
+}
+
+SCRIPT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+TOOLS_DIR=${TOOLS_DIR:-"${SCRIPT_ROOT}/tools"}
+CAKE_VERSION=${CAKE_VERSION:-0.28.0}
+CAKE_NETCOREAPP_VERSION=${CAKE_NETCOREAPP_VERSION:-2.0}
+
+mkdir -p "${TOOLS_DIR}"
+
+CAKE_DLL=$(find "${TOOLS_DIR}" -type f -name 'Cake.dll' | head -n 1)
 
 # Define default arguments.
 SCRIPT="build.cake"
@@ -33,6 +33,10 @@ SCRIPT_ARGUMENTS=()
 
 # Parse arguments.
 for i in "$@"; do
+    if [ "$#" -lt 2 ]; then
+        break
+    fi
+
     case $1 in
         -s|--script) SCRIPT="$2"; shift ;;
         -t|--target) TARGET="$2"; shift ;;
@@ -46,56 +50,32 @@ for i in "$@"; do
     shift
 done
 
-# Make sure the tools folder exist.
-if [ ! -d "$TOOLS_DIR" ]; then
-  mkdir "$TOOLS_DIR"
-fi
+###########################################################################
+# INSTALL CAKE
+###########################################################################
 
-# Make sure that packages.config exist.
-if [ ! -f "$TOOLS_DIR/packages.config" ]; then
-    echo "Downloading packages.config..."
-    curl -Lsfo "$TOOLS_DIR/packages.config" https://cakebuild.net/download/bootstrapper/packages
-    if [ $? -ne 0 ]; then
-        echo "An error occured while downloading packages.config."
+if [ ! -f "${CAKE_DLL}" ]; then
+    echo "Installing Cake ${CAKE_VERSION}"
+
+    TOOLS_PROJ="${TOOLS_DIR%/}/cake.csproj"
+    echo "<Project Sdk=\"Microsoft.NET.Sdk\"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>netcoreapp${CAKE_NETCOREAPP_VERSION}</TargetFramework></PropertyGroup></Project>" > "${TOOLS_PROJ}"
+    dotnet add "${TOOLS_PROJ}" package Cake.CoreCLR -v "${CAKE_VERSION}" --package-directory "${TOOLS_DIR%/}/Cake.CoreCLR.${CAKE_VERSION}"
+
+    CAKE_DLL=$(find "${TOOLS_DIR}" -type f -name 'Cake.dll' | head -n 1)
+
+    if [ ! -f "${CAKE_DLL}" ]; then
+        echo >&2 "Failed to install Cake ${CAKE_VERSION}"
         exit 1
     fi
 fi
 
-# Download NuGet if it does not exist.
-if [ ! -f "$NUGET_EXE" ]; then
-    echo "Downloading NuGet..."
-    curl -Lsfo "$NUGET_EXE" https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-    if [ $? -ne 0 ]; then
-        echo "An error occured while downloading nuget.exe."
-        exit 1
-    fi
-fi
-
-# Restore tools from NuGet.
-pushd "$TOOLS_DIR" >/dev/null
-if [ ! -f $PACKAGES_CONFIG_MD5 ] || [ "$( cat $PACKAGES_CONFIG_MD5 | sed 's/\r$//' )" != "$( $MD5_EXE $PACKAGES_CONFIG | awk '{ print $1 }' )" ]; then
-    find . -type d ! -name . | xargs rm -rf
-fi
-
-mono "$NUGET_EXE" install -ExcludeVersion
-if [ $? -ne 0 ]; then
-    echo "Could not restore NuGet packages."
-    exit 1
-fi
-
-$MD5_EXE $PACKAGES_CONFIG | awk '{ print $1 }' >| $PACKAGES_CONFIG_MD5
-
-popd >/dev/null
-
-# Make sure that Cake has been installed.
-if [ ! -f "$CAKE_EXE" ]; then
-    echo "Could not find Cake.exe at '$CAKE_EXE'."
-    exit 1
-fi
-
+###########################################################################
+# RUN BUILD SCRIPT
+###########################################################################
+ 
 # Start Cake
 if $SHOW_VERSION; then
-    exec mono "$CAKE_EXE" -version
+    exec dotnet "$CAKE_DLL" -version
 else
-    exec mono "$CAKE_EXE" $SCRIPT -verbosity=$VERBOSITY -configuration=$CONFIGURATION -target=$TARGET $DRYRUN "${SCRIPT_ARGUMENTS[@]}"
+    exec dotnet "$CAKE_DLL" "${SCRIPT}" "-verbosity=${VERBOSITY}" "-configuration=${CONFIGURATION}" "-target=${TARGET}" "${DRYRUN}" "${SCRIPT_ARGUMENTS[@]}"
 fi

@@ -1,0 +1,3 @@
+<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>netcoreapp2.0</TargetFramework></PropertyGroup><ItemGroup>
+  <PackageReference Include="Cake.CoreCLR" Version="0.26.1" />
+</ItemGroup></Project>
