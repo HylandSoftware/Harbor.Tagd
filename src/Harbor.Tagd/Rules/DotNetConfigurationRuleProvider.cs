@@ -47,7 +47,7 @@ namespace Harbor.Tagd.Rules
 			Project = section.GetValue<string>("project")?.ToCompiledRegex() ?? _catchAll,
 			Repo = section.GetValue<string>("repo")?.ToCompiledRegex() ?? _catchAll,
 			Tag = section.GetValue<string>("tag")?.ToCompiledRegex() ?? _catchAll,
-			Ignore = section.GetValue<string[]>("ignore"),
+			Ignore = section.GetSection("ignore").GetChildren().Select(i => i.Value).ToArray(),
 			Keep = section.GetValue<int>("keep").EnsurePositive()
 		};
 	}
