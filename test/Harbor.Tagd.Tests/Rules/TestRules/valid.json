@@ -1,0 +1,23 @@
+﻿{
+  "ignoreGlobally": {
+    "projects": [ "p1", "p2", "p3" ],
+    "repos": [ "r1", "r2", "r3" ],
+    "tags": [ "gt1", "gt2", "gt3" ]
+  },
+  "defaultRule": {
+    "project": "^foo$",
+    "repo": "^bar$",
+    "tag": "^baz$",
+    "ignore": [ "a", "b", "c" ],
+    "keep": 123
+  },
+  "rules": [
+    {
+      "project": "csp",
+      "repo": "evolution-api",
+      "tag": ".*",
+      "ignore": [ "develop" ],
+      "keep": 10
+    }
+  ]
+}

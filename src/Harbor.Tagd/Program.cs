@@ -11,7 +11,10 @@ using Serilog.Events;
 using Steeltoe.Extensions.Configuration.ConfigServer;
 using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+
+[assembly: InternalsVisibleTo("Harbor.Tagd.Tests")]
 
 namespace Harbor.Tagd
 {
