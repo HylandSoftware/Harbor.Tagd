@@ -78,7 +78,7 @@ pipeline {
                     --set "harbor.username=${HARBOR_CREDS_USR}" \
                     --set "harbor.password=${HARBOR_CREDS_PSW}" \
                     --set "notify.slack=${WEBHOOK}" \
-                    --set "verbosity=verbose"
+                    --set "verbosity=verbose" \
                     --wait
                 '''
             }
