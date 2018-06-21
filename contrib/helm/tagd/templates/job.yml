@@ -1,0 +1,49 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ template "tagd.fullname" . }}
+  labels:
+    app: {{ template "tagd.fullname" . }}
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+spec:
+  schedule: {{ .Values.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: {{ .Values.history.success }}
+  failedJobsHistoryLimit: {{ .Values.history.failed }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          {{- if .Values.spec.nodeSelector }}
+          nodeSelector:
+{{ toYaml .Values.spec.nodeSelector | indent 12 }}
+          {{- end }}
+          containers:
+          - name: {{ template "tagd.fullname" . }}
+            image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+            args:
+            - --endpoint
+            - {{ .Values.harbor.endpoint | quote }}
+            - --user
+            - {{ .Values.harbor.username | quote }}
+            - --password
+            - {{ .Values.harbor.password | quote }}
+            {{- if .Values.rules.configServer }}
+            - --config-server
+            - {{ .Values.rules.configServer.endpoint | quote }}
+            {{- end }}
+            {{- if .Values.notify.slack }}
+            - --notify-slack
+            - {{ .Values.notify.slack }}
+            {{- end }}
+            {{- if .Values.verbosity}}
+            - --verbosity
+            - {{ .Values.verbosity }}
+            {{- end }}
+            {{- if .Values.destructive }}
+            - --destructive
+            {{- end }}
+          restartPolicy: Never

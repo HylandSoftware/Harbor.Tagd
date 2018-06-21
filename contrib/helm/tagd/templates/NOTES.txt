@@ -1,0 +1,9 @@
+tagd was successfully installed or updated.
+
+It will cleanup tags on {{ .Values.harbor.endpoint }} as {{ .Values.harbor.username }}
+
+{{ if .Values.notify.slack }}
+Notifications will be sent to {{ .Values.notify.slack }}
+{{- end }}
+
+Jobs will run on the following schedule: {{ .Values.schedule | quote }}

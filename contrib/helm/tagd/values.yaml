@@ -1,0 +1,37 @@
+# Default values for tagd.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+## Overrides for generated resource names
+# See templates/_helpers.tpl
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  name: "hcr.io/nlowe/tagd"
+  tag: "latest"
+  pullPolicy: "Always"
+
+spec:
+  nodeSelector:
+    beta.kubernetes.io/os: "linux"
+
+harbor:
+  endpoint: "https://hcr.io"
+  username: ""
+  password: ""
+
+rules:
+  configServer:
+    endpoint: "https://config.hylandqa.net"
+
+notify:
+  slack: ""
+
+verbosity: ""
+destructive: True
+
+schedule: "0 12 * * 1-5"
+history:
+  success: 3
+  failed: 1
