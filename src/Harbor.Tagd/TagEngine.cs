@@ -1,8 +1,8 @@
-﻿using Harbor.Tagd.Extensions;
+﻿using Harbor.Tagd.API;
+using Harbor.Tagd.API.Models;
+using Harbor.Tagd.Extensions;
 using Harbor.Tagd.Notifications;
 using Harbor.Tagd.Rules;
-using Harbormaster;
-using Harbormaster.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

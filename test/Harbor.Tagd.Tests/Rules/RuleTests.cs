@@ -1,7 +1,7 @@
 ﻿using AutoFixture;
 using AutoFixture.Xunit2;
 using Harbor.Tagd.Rules;
-using Harbormaster.Models;
+using Harbor.Tagd.API.Models;
 using Moq;
 using System;
 using System.Linq;
@@ -23,8 +23,8 @@ namespace Harbor.Tagd.Tests.Rules
 			_project = _fixture.Create<Project>();
 			_repository = _fixture.Create<Repository>();
 
-			Harbor.Setup(h => h.GetAllProjects(It.IsAny<string>(), It.IsAny<bool?>(), It.IsAny<string>())).ReturnsAsync(() => new[] { _project });
-			Harbor.Setup(h => h.GetRepositories(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(() => new[] { _repository });
+			Harbor.Setup(h => h.GetAllProjects()).ReturnsAsync(() => new[] { _project });
+			Harbor.Setup(h => h.GetRepositories(It.IsAny<int>())).ReturnsAsync(() => new[] { _repository });
 		}
 
 		[Theory, AutoData]

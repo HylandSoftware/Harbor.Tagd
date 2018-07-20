@@ -1,4 +1,4 @@
-﻿using Harbormaster.Models;
+﻿using Harbor.Tagd.API.Models;
 using System.Collections.Generic;
 
 namespace Harbor.Tagd

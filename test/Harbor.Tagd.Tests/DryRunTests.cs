@@ -1,6 +1,6 @@
 ﻿using AutoFixture;
+using Harbor.Tagd.API.Models;
 using Harbor.Tagd.Rules;
-using Harbormaster.Models;
 using Moq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -30,8 +30,8 @@ namespace Harbor.Tagd.Tests
 				}
 			}.EnsureDefaults());
 
-			Harbor.Setup(h => h.GetAllProjects(It.IsAny<string>(), It.IsAny<bool?>(), It.IsAny<string>())).ReturnsAsync(new[] { project });
-			Harbor.Setup(h => h.GetRepositories(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(new[] { repo });
+			Harbor.Setup(h => h.GetAllProjects()).ReturnsAsync(new[] { project });
+			Harbor.Setup(h => h.GetRepositories(It.IsAny<int>())).ReturnsAsync(new[] { repo });
 			Harbor.Setup(h => h.GetTags(It.IsAny<string>())).ReturnsAsync(tags);
 
 			await _sut.Process();

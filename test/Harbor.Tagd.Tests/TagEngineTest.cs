@@ -1,9 +1,9 @@
 ﻿using AutoFixture;
 using Harbor.Tagd.Notifications;
 using Harbor.Tagd.Rules;
-using Harbormaster;
 using Moq;
 using System;
+using Harbor.Tagd.API;
 
 namespace Harbor.Tagd.Tests
 {

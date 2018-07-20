@@ -1,10 +1,10 @@
 ﻿using clipr;
+using Harbor.Tagd.API;
+using Harbor.Tagd.API.Models;
 using Harbor.Tagd.Extensions;
 using Harbor.Tagd.Notifications;
 using Harbor.Tagd.Rules;
 using Harbor.Tagd.Util;
-using Harbormaster;
-using Harbormaster.Models;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
@@ -34,7 +34,7 @@ namespace Harbor.Tagd
 			Log.Logger = new LoggerConfiguration()
 				.MinimumLevel.ControlledBy(logLevel)
 				.Enrich.FromLogContext()
-				.Destructure.ByTransforming<Project>(p => new { p.Id, p.Name, p.OwnerId })
+				.Destructure.ByTransforming<Project>(p => new { p.Id, p.Name })
 				.Destructure.ByTransforming<Repository>(r => new { r.Id, r.Name, r.TagCount})
 				.Destructure.ByTransforming<Tag>(t => new { t.Repository, t.Name, t.CreatedAt })
 				.Destructure.ByTransforming<ProcessResult>(r => new { r.RemovedTags, r.IgnoredTags, r.IgnoredRepos, r.IgnoredProjects })
