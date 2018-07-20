@@ -1,6 +1,8 @@
-#addin "nuget:?package=Cake.Docker&version=0.9.3"
+#addin "nuget:?package=Cake.Docker&version=0.9.4"
+#addin "nuget:?package=Cake.MiniCover&version=0.28.1"
 
 const string SOLUTION = "./Harbor.Tagd.sln";
+SetMiniCoverToolsProject("./minicover/minicover.csproj");
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -64,15 +66,25 @@ Task("Test")
     .WithCriteria(!Argument("SkipTests", false))
     .Does(() =>
 {
-    foreach(var proj in GetFiles("./test/**/*.csproj"))
-    {
-        Information("Testing Project: " + proj);
-        DotNetCoreTest(proj.FullPath, new DotNetCoreTestSettings
+    MiniCover(tool =>
         {
-            Configuration = configuration,
-            ArgumentCustomization = args => args.Append("--no-restore")
-        });
-    }
+            foreach(var proj in GetFiles("./test/**/*.csproj"))
+            {
+                Information("Testing Project: " + proj);
+                DotNetCoreTest(proj.FullPath, new DotNetCoreTestSettings
+                {
+                    NoBuild = true,
+                    Configuration = configuration,
+                    ArgumentCustomization = args => args.Append("--no-restore")
+                });
+            }
+        },
+        new MiniCoverSettings()
+            .WithAssembliesMatching("./test/**/*.dll")
+            .WithSourcesMatching("./src/**/*.cs")
+            .WithNonFatalThreshold()
+            .GenerateReport(ReportType.CONSOLE | ReportType.OPENCOVER)
+    );
 });
 
 Task("Dist")
