@@ -25,7 +25,7 @@ namespace Harbor.Tagd.Tests
 		[Theory, AutoData]
 		public async Task CanLogin(string token, string user, string password)
 		{
-			ConfigurAuthToken(token);
+			ConfigureAuthToken(token);
 
 			await client.Login(user, password);
 
@@ -36,7 +36,7 @@ namespace Harbor.Tagd.Tests
 		[Theory, AutoData]
 		public async Task SendsSessionCookieWhenLoggedIn(string token, string user, string password, IEnumerable<Project> projects)
 		{
-			ConfigurAuthToken(token);
+			ConfigureAuthToken(token);
 			_http.RespondWithJson(projects);
 
 			await client.Login(user, password);
@@ -82,7 +82,7 @@ namespace Harbor.Tagd.Tests
 		[Theory, AutoData]
 		public async Task CanLogout(string token, string user, string password)
 		{
-			ConfigurAuthToken(token);
+			ConfigureAuthToken(token);
 
 			await client.Login(user, password);
 			await client.Logout();
@@ -187,7 +187,7 @@ namespace Harbor.Tagd.Tests
 			}
 		}
 
-		protected void ConfigurAuthToken(string token) => _http.RespondWith("", cookies: new { beegosessionID = token });
+		protected void ConfigureAuthToken(string token) => _http.RespondWith("", cookies: new { beegosessionID = token });
 
 		public void Dispose()
 		{
