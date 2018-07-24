@@ -8,10 +8,10 @@
 
   <ItemGroup>
     <PackageReference Include="clipr" Version="1.6.0.1" />
-    <PackageReference Include="Harbormaster" Version="1.0.49" />
+    <PackageReference Include="Flurl.Http" Version="2.3.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Serilog" Version="2.6.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.2" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />

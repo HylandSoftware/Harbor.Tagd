@@ -1,5 +1,5 @@
 ﻿using AutoFixture.Xunit2;
-using Harbormaster.Models;
+using Harbor.Tagd.API.Models;
 using Moq;
 using System.Threading.Tasks;
 using Xunit;
@@ -18,12 +18,12 @@ namespace Harbor.Tagd.Tests.Rules
 		{
 			_ruleSet.IgnoreGlobally.Projects = new[] { p.Name };
 
-			Harbor.Setup(h => h.GetAllProjects(It.IsAny<string>(), It.IsAny<bool?>(), It.IsAny<string>())).ReturnsAsync(new[] { p });
+			Harbor.Setup(h => h.GetAllProjects()).ReturnsAsync(new[] { p });
 
 			await _sut.Process();
 
 			Serilog.Verify(l => l.Verbose("Skipping project {@project}", p.Name), Times.Once);
-			Harbor.Verify(h => h.GetRepositories(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
+			Harbor.Verify(h => h.GetRepositories(It.IsAny<int>()), Times.Never);
 		}
 
 		[Theory, AutoData]
@@ -31,8 +31,8 @@ namespace Harbor.Tagd.Tests.Rules
 		{
 			_ruleSet.IgnoreGlobally.Repos = new[] { r.Name };
 
-			Harbor.Setup(h => h.GetAllProjects(It.IsAny<string>(), It.IsAny<bool?>(), It.IsAny<string>())).ReturnsAsync(new[] { p });
-			Harbor.Setup(h => h.GetRepositories(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(new[] { r });
+			Harbor.Setup(h => h.GetAllProjects()).ReturnsAsync(new[] { p });
+			Harbor.Setup(h => h.GetRepositories(It.IsAny<int>())).ReturnsAsync(new[] { r });
 
 			await _sut.Process();
 
@@ -45,8 +45,8 @@ namespace Harbor.Tagd.Tests.Rules
 		{
 			_ruleSet.IgnoreGlobally.Tags = new[] { t.Name };
 
-			Harbor.Setup(h => h.GetAllProjects(It.IsAny<string>(), It.IsAny<bool?>(), It.IsAny<string>())).ReturnsAsync(new[] { p });
-			Harbor.Setup(h => h.GetRepositories(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(new[] { r });
+			Harbor.Setup(h => h.GetAllProjects()).ReturnsAsync(new[] { p });
+			Harbor.Setup(h => h.GetRepositories(It.IsAny<int>())).ReturnsAsync(new[] { r });
 			Harbor.Setup(h => h.GetTags(It.IsAny<string>())).ReturnsAsync(new[] { t });
 
 			await _sut.Process();

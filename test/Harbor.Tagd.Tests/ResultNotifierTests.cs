@@ -1,7 +1,7 @@
 ﻿using AutoFixture;
 using AutoFixture.Xunit2;
 using Harbor.Tagd.Rules;
-using Harbormaster.Models;
+using Harbor.Tagd.API.Models;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -17,8 +17,8 @@ namespace Harbor.Tagd.Tests
 		[Theory, AutoData]
 		public async Task PostsResults(List<Project> projects, List<Repository> repos)
 		{
-			Harbor.Setup(h => h.GetAllProjects(It.IsAny<string>(), It.IsAny<bool?>(), It.IsAny<string>())).ReturnsAsync(projects);
-			Harbor.Setup(h => h.GetRepositories(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(repos);
+			Harbor.Setup(h => h.GetAllProjects()).ReturnsAsync(projects);
+			Harbor.Setup(h => h.GetRepositories(It.IsAny<int>())).ReturnsAsync(repos);
 
 			var tags = _fixture.CreateMany<Tag>(10);
 			Harbor.Setup(h => h.GetTags(It.IsAny<string>())).ReturnsAsync(tags);
@@ -51,7 +51,7 @@ namespace Harbor.Tagd.Tests
 		[Theory, AutoData]
 		public async Task PostsUnhandledExceptions(RuleSet set)
 		{
-			Harbor.Setup(h => h.GetAllProjects(It.IsAny<string>(), It.IsAny<bool?>(), It.IsAny<string>())).ThrowsAsync(new Exception("Dummy"));
+			Harbor.Setup(h => h.GetAllProjects()).ThrowsAsync(new Exception("Dummy"));
 
 			Exception unhandledException = null;
 			NotificationHandler.Setup(n => n.NotifyUnhandledException(It.IsAny<Exception>())).Callback<Exception>(ex => unhandledException = ex);
