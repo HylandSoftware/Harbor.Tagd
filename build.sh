@@ -77,5 +77,5 @@ fi
 if $SHOW_VERSION; then
     exec dotnet "$CAKE_DLL" -version
 else
-    exec dotnet "$CAKE_DLL" "${SCRIPT}" "-verbosity=${VERBOSITY}" "-configuration=${CONFIGURATION}" "-target=${TARGET}" "${DRYRUN}" "${SCRIPT_ARGUMENTS[@]}"
+    exec dotnet "$CAKE_DLL" "${SCRIPT}" "-verbosity=${VERBOSITY}" "-configuration=${CONFIGURATION}" "-target=${TARGET}" "${DRYRUN}" "${SCRIPT_ARGUMENTS[@]+\"\$\{SCRIPT_ARGUMENTS[@]\}\"}"
 fi
