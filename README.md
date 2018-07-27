@@ -1,5 +1,7 @@
 # Tag Cleanup Daemon for [VMware Harbor](https://github.com/vmware/harbor)
 
+[![Build Status](https://travis-ci.org/HylandSoftware/Harbor.Tagd.svg?branch=master)](https://travis-ci.org/HylandSoftware/Harbor.Tagd) [![Coverage Status](https://coveralls.io/repos/github/HylandSoftware/Harbor.Tagd/badge.svg?branch=master)](https://coveralls.io/github/HylandSoftware/Harbor.Tagd?branch=master)
+
 `tagd` automates the process of cleaning up old tags from your Harbor container
 registries. You can override the default policy to be more or less specific for
 projects and repositories if needed.
@@ -102,4 +104,8 @@ rules:
 
 ## License
 
-**TBD**
+tagd is licensed under the MIT License. See [`LICENSE`](./LICENSE) for details.
+
+tagd makes use of [`nuget`](https://nuget.org) for package management. Packages
+restored by `nuget` have their own license which may differ from the terms of
+the MIT license that we use.

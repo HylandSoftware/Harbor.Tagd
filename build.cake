@@ -1,6 +1,8 @@
-#addin "nuget:?package=Cake.Docker&version=0.9.3"
+#addin "nuget:?package=Cake.Docker&version=0.9.4"
+#addin "nuget:?package=Cake.MiniCover&version=0.29.0-next20180721071547&prerelease"
 
 const string SOLUTION = "./Harbor.Tagd.sln";
+SetMiniCoverToolsProject("./minicover/minicover.csproj");
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -64,15 +66,40 @@ Task("Test")
     .WithCriteria(!Argument("SkipTests", false))
     .Does(() =>
 {
-    foreach(var proj in GetFiles("./test/**/*.csproj"))
-    {
-        Information("Testing Project: " + proj);
-        DotNetCoreTest(proj.FullPath, new DotNetCoreTestSettings
+    MiniCover(tool =>
         {
-            Configuration = configuration,
-            ArgumentCustomization = args => args.Append("--no-restore")
-        });
+            foreach(var proj in GetFiles("./test/**/*.csproj"))
+            {
+                Information("Testing Project: " + proj);
+                DotNetCoreTest(proj.FullPath, new DotNetCoreTestSettings
+                {
+                    NoBuild = true,
+                    Configuration = configuration,
+                    ArgumentCustomization = args => args.Append("--no-restore")
+                });
+            }
+        },
+        new MiniCoverSettings()
+            .WithAssembliesMatching("./test/**/*.dll")
+            .WithSourcesMatching("./src/**/*.cs")
+            .WithNonFatalThreshold()
+            .GenerateReport(ReportType.CONSOLE)
+    );
+});
+
+Task("Coveralls")
+    .Does(() => 
+{
+    if (!TravisCI.IsRunningOnTravisCI)
+    {
+        Warning("Not running on travis, cannot publish coverage");
+        return;
     }
+
+    MiniCoverReport(new MiniCoverSettings()
+        .WithCoverallsSettings(c => c.UseTravisDefaults())
+        .GenerateReport(ReportType.COVERALLS)
+    );
 });
 
 Task("Dist")
@@ -92,7 +119,7 @@ Task("Docker")
     .Does(() => 
 {
     DockerBuild(new DockerImageBuildSettings {
-        Tag = new[]{ "hcr.io/nlowe/tagd:latest" }
+        Tag = new[]{ "hylandsoftware/tagd:latest" }
     }, ".");
 });
 

@@ -1,0 +1,14 @@
+language: csharp
+sudo: required
+mono: none
+dotnet: 2.0.0
+dist: trusty
+
+services:
+  - docker
+
+script:
+- ./build/travis.sh
+
+after_script:
+- ./build.sh -t Coveralls

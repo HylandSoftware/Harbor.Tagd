@@ -15,7 +15,7 @@ command -v dotnet >/dev/null 2>&1 || {
 
 SCRIPT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 TOOLS_DIR=${TOOLS_DIR:-"${SCRIPT_ROOT}/tools"}
-CAKE_VERSION=${CAKE_VERSION:-0.28.0}
+CAKE_VERSION=${CAKE_VERSION:-0.29.0}
 CAKE_NETCOREAPP_VERSION=${CAKE_NETCOREAPP_VERSION:-2.0}
 
 mkdir -p "${TOOLS_DIR}"
