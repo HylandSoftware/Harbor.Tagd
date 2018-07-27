@@ -9,3 +9,6 @@ services:
 
 script:
 - ./build/travis.sh
+
+after_script:
+- ./build.sh -t Coveralls
