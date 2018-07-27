@@ -102,4 +102,8 @@ rules:
 
 ## License
 
-**TBD**
+tagd is licensed under the MIT License. See [`LICENSE`](./LICENSE) for details.
+
+tagd makes use of [`nuget`](https://nuget.org) for package management. Packages
+restored by `nuget` have their own license which may differ from the terms of
+the MIT license that we use.
