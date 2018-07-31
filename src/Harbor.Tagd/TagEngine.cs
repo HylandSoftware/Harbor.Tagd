@@ -1,5 +1,6 @@
 ﻿using Harbor.Tagd.API;
 using Harbor.Tagd.API.Models;
+using Harbor.Tagd.Args;
 using Harbor.Tagd.Extensions;
 using Harbor.Tagd.Notifications;
 using Harbor.Tagd.Rules;
@@ -37,10 +38,6 @@ namespace Harbor.Tagd
 		public async Task Process()
 		{
 			LoadRules();
-			if(_settings.ValidateOnly)
-			{
-				return;
-			}
 
 			if (_destructive)
 			{
@@ -114,27 +111,7 @@ namespace Harbor.Tagd
 		private void LoadRules()
 		{
 			Log.Information("Loading rules using {provider}", _ruleProvider.GetType().FullName);
-			_ruleSet = _ruleProvider.Load();
-
-			if (_ruleSet?.DefaultRule == null)
-			{
-				throw new Exception("The rule provider did not return a default rule");
-			}
-
-			if ((_ruleSet?.Rules?.Count ?? 0) == 0)
-			{
-				Log.Warning("The rule provider did not return any explicit tag rules");
-			}
-
-			foreach (var rule in _ruleSet.Rules)
-			{
-				Log.Verbose("Found rule {rule}", rule);
-			}
-			Log.Verbose("Using default rule {defaultRule}", _ruleSet.DefaultRule);
-
-			Log.Verbose("Ignoring the following projects: {projects}", _ruleSet.IgnoreGlobally?.Projects);
-			Log.Verbose("Ignoring the following repos: {repos}", _ruleSet.IgnoreGlobally?.Repos);
-			Log.Verbose("Ignoring the following tags: {tags}", _ruleSet.IgnoreGlobally?.Tags);
+			_ruleSet = _ruleProvider.Load()?.Check() ?? throw new ArgumentException("The rule provider did not provide any rules");
 		}
 
 		private async Task<int> ProcessProject(Project p, IEnumerable<Rule> projectRules)

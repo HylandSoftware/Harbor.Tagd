@@ -1,6 +1,7 @@
 ﻿using clipr;
 using Harbor.Tagd.API;
 using Harbor.Tagd.API.Models;
+using Harbor.Tagd.Args;
 using Harbor.Tagd.Extensions;
 using Harbor.Tagd.Notifications;
 using Harbor.Tagd.Rules;
@@ -11,6 +12,7 @@ using Serilog.Events;
 using Steeltoe.Extensions.Configuration.ConfigServer;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -43,7 +45,18 @@ namespace Harbor.Tagd
 
 			try
 			{
-				var settings = CliParser.Parse<ApplicationSettings>(args);
+				CommonArgs settings = null;
+				bool check = false;
+
+				if (args[0].Equals("check", StringComparison.OrdinalIgnoreCase))
+				{
+					check = true;
+					settings = CliParser.Parse<CommonArgs>(args.Skip(1).ToArray());
+				}
+				else
+				{
+					settings = CliParser.Parse<ApplicationSettings>(args);
+				}
 
 				logLevel.MinimumLevel = ParseVerbosity(settings.Verbosity);
 
@@ -67,18 +80,15 @@ namespace Harbor.Tagd
 						new SerilogLoggerFactory()
 					) : (IRuleProvider) new FilesystemRuleProvider(settings.ConfigFile);
 
-				var engine = new TagEngine(
-					new HarborClient(NormalizeEndpointUrl(settings.Endpoint)),
-					settings,
-					Log.ForContext<TagEngine>(),
-					ruleProvider,
-					settings.SlackWebhook == null ? null : new SlackResultNotifier(settings)
-				);
-
-				var sw = new Stopwatch();
-				sw.Start();
-				await engine.Process();
-				Log.Information("Finished in {elapsed}", sw.Elapsed);
+				if (check)
+				{
+					ruleProvider.Load().Check();
+				}
+				else
+				{
+					var appSettings = settings as ApplicationSettings;
+					await DoClean(appSettings, ruleProvider);
+				}
 			}
 			catch(clipr.Core.ParserExit)
 			{
@@ -92,6 +102,22 @@ namespace Harbor.Tagd
 			{
 				Log.CloseAndFlush();
 			}
+		}
+
+		private static async Task DoClean(ApplicationSettings appSettings, IRuleProvider rules)
+		{
+			var engine = new TagEngine(
+				new HarborClient(NormalizeEndpointUrl(appSettings.Endpoint)),
+				appSettings,
+				Log.ForContext<TagEngine>(),
+				rules,
+				appSettings.SlackWebhook == null ? null : new SlackResultNotifier(appSettings)
+			);
+
+			var sw = new Stopwatch();
+			sw.Start();
+			await engine.Process();
+			Log.Information("Finished in {elapsed}", sw.Elapsed);
 		}
 
 		private static string NormalizeEndpointUrl(string endpoint) =>
