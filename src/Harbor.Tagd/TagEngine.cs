@@ -37,7 +37,7 @@ namespace Harbor.Tagd
 		public async Task Process()
 		{
 			LoadRules();
-			if(_settings.DumpRules)
+			if(_settings.ValidateOnly)
 			{
 				return;
 			}

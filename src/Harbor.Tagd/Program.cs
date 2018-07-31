@@ -47,7 +47,7 @@ namespace Harbor.Tagd
 
 				logLevel.MinimumLevel = ParseVerbosity(settings.Verbosity);
 
-				var configProvider = settings.ConfigFile.IsNullOrEmpty() ?
+				var ruleProvider = settings.ConfigFile.IsNullOrEmpty() ?
 					new ConfigServerRuleProvider(
 						new ConfigServerClientSettings
 						{
@@ -71,7 +71,7 @@ namespace Harbor.Tagd
 					new HarborClient(NormalizeEndpointUrl(settings.Endpoint)),
 					settings,
 					Log.ForContext<TagEngine>(),
-					configProvider,
+					ruleProvider,
 					settings.SlackWebhook == null ? null : new SlackResultNotifier(settings)
 				);
 

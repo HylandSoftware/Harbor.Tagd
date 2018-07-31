@@ -12,7 +12,7 @@ namespace Harbor.Tagd.Tests
 	{
 		public RuleResolutionTests()
 		{
-			Settings.DumpRules = true;
+			Settings.ValidateOnly = true;
 		}
 
 		[Fact]
