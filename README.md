@@ -49,7 +49,8 @@ actually delete tags, invoke with `--destructive`.
 ### Usage
 
 ```text
-Usage: Harbor.Tagd [ -h|--help ] [ --version ] --endpoint -u|--userU -p|--passwordP [ -v|--verbosity V ] [ --config-file  ] [ --config-server  ] [ --config-user  ] [ --config-password  ] [ --destructive ] [ --dump-rules ] [ --notify-slack  ]
+Usage: Harbor.Tagd [ -h|--help ] [ --version ] --endpoint  -u|--user U -p|--password P [ --destructive ] [ --notify-slack  ] [ -v|--verbosity V ] [ --config-file  ] [ --config-server  ] [
+--config-user  ] [ --config-password  ]
 
  Tag Cleanup daemon for VMware Harbor Registries
 
@@ -59,16 +60,26 @@ Required Arguments:
  -u, --user         The user to connect to harbor as
 
 Optional Arguments:
+ --destructive      Actually delete tags instead of generating a report
+ --notify-slack     Post results to this slack-compatible webhook
  --config-file      The config file to parse
  --config-server    The springboot config server to get configuration from
  --config-user      The user to login to the springboot config server as
  --config-password  The password for the springboot config server user
- --destructive      Actually delete tags instead of generating a report
- --dump-rules       Print the rules that would be used and exit
- --notify-slack     Post results to this slack-compatible webhook
  -h, --help         Display this help document.
  -v, --verbosity    How verbose should logging output be
  --version          Displays the version of the current executable.
+```
+
+If no value is provided for `--password` you will be prompted to enter a masked password:
+
+```bash
+$ dotnet .\dist\Harbor.Tagd.dll --config-server https://config.mydomain.net --verbosity verbose --endpoint https://hcr.io --user harboradmin --password
+Input a value for --password:
+[17:17:26 INF] Fetching config from server at: https://config.mydomain.net
+[17:17:27 INF] Located environment: tagd, ["Production"], null, 05ba9ab0fe7b8846da1863cac3b4eebaa260c54b
+[17:17:27 INF] Loading rules using Harbor.Tagd.Rules.ConfigServerRuleProvider
+[17:17:27 INF] Connecting to https://hcr.io as harboradmin
 ```
 
 ### Configuration
@@ -100,6 +111,29 @@ rules:
   tag: '.*'
   ignore: ['latest']
   keep: 10
+```
+
+You can validate your rule config using the `check` verb:
+
+```bash
+$ dotnet .\dist\Harbor.Tagd.dll check --config-file rules.yml --verbosity verbose
+```
+
+#### Usage
+
+```bash
+Usage: Harbor.Tagd check [ -h|--help ] [ --version ] [ -v|--verbosity V ] [ --config-file  ] [ --config-server  ] [ --config-user  ] [ --config-password  ]
+
+ Load and validate rules
+
+Optional Arguments:
+ --config-file      The config file to parse
+ --config-server    The springboot config server to get configuration from
+ --config-user      The user to login to the springboot config server as
+ --config-password  The password for the springboot config server user
+ -h, --help         Display this help document.
+ -v, --verbosity    How verbose should logging output be
+ --version          Displays the version of the current executable.
 ```
 
 ## License

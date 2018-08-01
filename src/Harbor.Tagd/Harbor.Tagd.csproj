@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="clipr" Version="1.6.0.1" />
+    <PackageReference Include="clipr" Version="1.6.1" />
     <PackageReference Include="Flurl.Http" Version="2.3.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.0.0" />

@@ -4,6 +4,7 @@ using Harbor.Tagd.Rules;
 using Moq;
 using System;
 using Harbor.Tagd.API;
+using Harbor.Tagd.Args;
 
 namespace Harbor.Tagd.Tests
 {
