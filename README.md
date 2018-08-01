@@ -49,12 +49,14 @@ actually delete tags, invoke with `--destructive`.
 ### Usage
 
 ```text
-Usage: Harbor.Tagd [ -h|--help ] [ --version ] --endpoint -u|--userU [ -p|--password P ] [ --destructive ] [ --notify-slack  ] [ -v|--verbosity V ] [ --config-file  ] [ --config-server  ] [ --config-user  ] [ --config-password  ]
+Usage: Harbor.Tagd [ -h|--help ] [ --version ] --endpoint  -u|--user U -p|--password P [ --destructive ] [ --notify-slack  ] [ -v|--verbosity V ] [ --config-file  ] [ --config-server  ] [
+--config-user  ] [ --config-password  ]
 
  Tag Cleanup daemon for VMware Harbor Registries
 
 Required Arguments:
  --endpoint         The harbor registry to connect to
+ -p, --password     The password for the user connecting to harbor
  -u, --user         The user to connect to harbor as
 
 Optional Arguments:
@@ -65,7 +67,6 @@ Optional Arguments:
  --config-user      The user to login to the springboot config server as
  --config-password  The password for the springboot config server user
  -h, --help         Display this help document.
- -p, --password     The password for the user connecting to harbor
  -v, --verbosity    How verbose should logging output be
  --version          Displays the version of the current executable.
 ```
