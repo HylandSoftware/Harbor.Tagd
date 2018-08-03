@@ -100,11 +100,8 @@ namespace Harbor.Tagd
 			}
 			finally
 			{
-				if(!string.IsNullOrEmpty(_harbor.SessionToken))
-				{
-					Log.Information("Logging out");
-					await _harbor.Logout();
-				}
+				Log.Information("Logging out");
+				await _harbor.Logout();
 			}
 		}
 
