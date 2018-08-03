@@ -60,7 +60,7 @@ namespace Harbor.Tagd
 
 				logLevel.MinimumLevel = ParseVerbosity(settings.Verbosity);
 
-				var ruleProvider = settings.ConfigFile.IsNullOrEmpty() ?
+				var ruleProvider = string.IsNullOrEmpty(settings.ConfigFile) ?
 					new ConfigServerRuleProvider(
 						new ConfigServerClientSettings
 						{
