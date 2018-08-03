@@ -20,15 +20,11 @@ namespace Harbor.Tagd.API
 
 		public HarborClient(string endpoint) => Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
 
-		private IFlurlRequest CreateCall(bool sessionRequired = false)
+		private IFlurlRequest CreateCall()
 		{
 			var request = Endpoint.AppendPathSegment("api").EnableCookies();
 
-			if (sessionToken != null)
-			{
-				request = request.WithCookie(sessionToken);
-			}
-			else if (sessionRequired)
+			if (string.IsNullOrEmpty(SessionToken))
 			{
 				throw new InvalidOperationException("This API Call requires a session. Call Login(...) first");
 			}
