@@ -10,6 +10,7 @@ SetMiniCoverToolsProject("./minicover/minicover.csproj");
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
+var tag = Argument("tag", "latest");
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -88,14 +89,9 @@ Task("Test")
 });
 
 Task("Coveralls")
+    .WithCriteria(TravisCI.IsRunningOnTravisCI)
     .Does(() => 
 {
-    if (!TravisCI.IsRunningOnTravisCI)
-    {
-        Warning("Not running on travis, cannot publish coverage");
-        return;
-    }
-
     MiniCoverReport(new MiniCoverSettings()
         .WithCoverallsSettings(c => c.UseTravisDefaults())
         .GenerateReport(ReportType.COVERALLS)
@@ -114,13 +110,26 @@ Task("Dist")
     });
 });
 
-Task("Docker")
+Task("Docker::Build")
     .IsDependentOn("Dist")
     .Does(() => 
 {
     DockerBuild(new DockerImageBuildSettings {
-        Tag = new[]{ "hylandsoftware/tagd:latest" }
+        Tag = new[]{ $"hylandsoftware/tagd:{tag}" }
     }, ".");
+});
+
+Task("Docker::Push")
+    .IsDependentOn("Docker::Build")
+    .WithCriteria(TravisCI.IsRunningOnTravisCI)
+    .Does(() =>
+{
+    DockerPush($"hylandsoftware/tagd:{tag}");
+    
+    if (tag != "latest") {
+        DockerTag($"hylandsoftware/tagd:{tag}", "hylandsoftware/tagd:latest");
+        DockerPush($"hylandsoftware/tagd:latest");
+    }
 });
 
 //////////////////////////////////////////////////////////////////////
