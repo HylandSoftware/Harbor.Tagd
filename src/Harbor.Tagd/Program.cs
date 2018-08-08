@@ -120,10 +120,10 @@ namespace Harbor.Tagd
 			Log.Information("Finished in {elapsed}", sw.Elapsed);
 		}
 
-		private static string NormalizeEndpointUrl(string endpoint) =>
+		internal static string NormalizeEndpointUrl(string endpoint) =>
 			(endpoint.ToLower().StartsWith("http") ? endpoint : $"https://{endpoint}").TrimEnd('/');
 
-		private static LogEventLevel ParseVerbosity(string verbosity)
+		internal static LogEventLevel ParseVerbosity(string verbosity)
 		{
 			switch(verbosity?.ToLower())
 			{
