@@ -211,9 +211,6 @@ namespace Harbor.Tagd.Tests
 
 		protected void ConfigureAuthToken(string token) => _http.RespondWith("", cookies: new { beegosessionID = token });
 
-		public void Dispose()
-		{
-			_http.Dispose();
-		}
+		public void Dispose() => _http.Dispose();
 	}
 }

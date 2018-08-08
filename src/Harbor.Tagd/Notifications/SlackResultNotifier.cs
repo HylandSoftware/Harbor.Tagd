@@ -1,8 +1,6 @@
-﻿using Harbor.Tagd.Args;
-using Newtonsoft.Json;
+﻿using Flurl.Http;
+using Harbor.Tagd.Args;
 using System;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Harbor.Tagd.Notifications
@@ -10,6 +8,8 @@ namespace Harbor.Tagd.Notifications
 	internal class SlackResultNotifier : IResultNotifier
 	{
 		private readonly ApplicationSettings _settings;
+
+
 
 		public SlackResultNotifier(ApplicationSettings settings) => _settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
@@ -34,7 +34,7 @@ namespace Harbor.Tagd.Notifications
 		{
 			new
 			{
-				fallback = $"{(_settings.Nondestructive ? "DRY RUN - " : "")}Unhandled Exception encountered during tag cleanup: ${ex.Message}",
+				fallback = $"{(_settings.Nondestructive ? "DRY RUN - " : "")}Unhandled Exception encountered during tag cleanup: {ex.Message}",
 				title = $"{(_settings.Nondestructive ? "DRY RUN - " : "")}Unhandled Exception encountered during tag cleanup",
 				title_link = _settings.Endpoint.ToLower().StartsWith("http") ? _settings.Endpoint : $"https://{_settings.Endpoint}",
 				text = $"```csharp\n{ex.ToString()}\n```",
@@ -43,17 +43,11 @@ namespace Harbor.Tagd.Notifications
 			}
 		});
 
-		private async Task SendPayload(object[] attachments)
+		private async Task SendPayload(object[] attachments) => await _settings.SlackWebhook.PostJsonAsync(new
 		{
-			using (var client = new HttpClient())
-			{
-				await client.PostAsync(_settings.SlackWebhook, new StringContent(JsonConvert.SerializeObject(new
-				{
-					attachments,
-					username = "tagd",
-					icon_url = "https://secure.gravatar.com/avatar/26da7b36ff8bb5db4211400358dc7c4e.jpg?s=512&r=g&d=mm"
-				}), Encoding.UTF8, "application/json"));
-			}
-		}
+			attachments,
+			username = "tagd",
+			icon_url = "https://secure.gravatar.com/avatar/26da7b36ff8bb5db4211400358dc7c4e.jpg?s=512&r=g&d=mm"
+		});
 	}
 }
