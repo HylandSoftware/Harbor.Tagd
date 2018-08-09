@@ -36,7 +36,7 @@ of the `Dist` target.
 The easiest way to get up and running is to use the Docker Container:
 
 ```bash
-docker run -it --rm -v config.yml:/config.yml hcr.io/nlowe/tagd \
+docker run -it --rm -v config.yml:/config.yml hylandsoftware/tagd \
     --config-file /config.yml \
     --endpoint <your harbor server> \
     --user <service user> \
