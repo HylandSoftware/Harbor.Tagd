@@ -8,7 +8,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 image:
-  name: "hcr.io/nlowe/tagd"
+  name: "hylandsoftware/tagd"
   tag: "latest"
   pullPolicy: "Always"
 

@@ -32,11 +32,7 @@ SHOW_VERSION=false
 SCRIPT_ARGUMENTS=()
 
 # Parse arguments.
-for i in "$@"; do
-    if [ "$#" -lt 2 ]; then
-        break
-    fi
-
+while [ $# -gt 0 ]; do
     case $1 in
         -s|--script) SCRIPT="$2"; shift ;;
         -t|--target) TARGET="$2"; shift ;;
@@ -77,5 +73,5 @@ fi
 if $SHOW_VERSION; then
     exec dotnet "$CAKE_DLL" -version
 else
-    exec dotnet "$CAKE_DLL" "${SCRIPT}" "-verbosity=${VERBOSITY}" "-configuration=${CONFIGURATION}" "-target=${TARGET}" "${DRYRUN}" "${SCRIPT_ARGUMENTS[@]+\"\$\{SCRIPT_ARGUMENTS[@]\}\"}"
+    exec dotnet "$CAKE_DLL" "${SCRIPT}" "-verbosity=${VERBOSITY}" "-configuration=${CONFIGURATION}" "-target=${TARGET}" "${DRYRUN}" "${SCRIPT_ARGUMENTS[@]-}"
 fi
