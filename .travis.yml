@@ -13,7 +13,7 @@ services:
   - docker
 
 install:
-- git fetch --unshallow
+- git fetch origin +refs/heads/*:refs/remotes/origin/*
 
 script:
 - ./build/travis.sh
