@@ -8,9 +8,7 @@ projects and repositories if needed.
 
 ## Building
 
-You need version 2.0 or later of the dotnet core SDK. macOS and Linux also
-require `mono` to be installed to run the build script, but the project could
-be built manually.
+You need version 2.0 or later of the dotnet core SDK.
 
 Invoke the `cake` build script:
 
@@ -33,10 +31,10 @@ of the `Dist` target.
 
 ## Running
 
-The easiest way to get up and running is to use the Docker Container:
+The easiest way to get up and running is to use the [Docker Container](https://hub.docker.com/r/hylandsoftware/tagd/):
 
 ```bash
-docker run -it --rm -v config.yml:/config.yml hcr.io/nlowe/tagd \
+docker run -it --rm -v config.yml:/config.yml hylandsoftware/tagd \
     --config-file /config.yml \
     --endpoint <your harbor server> \
     --user <service user> \
