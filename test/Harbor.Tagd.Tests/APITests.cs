@@ -110,6 +110,8 @@ namespace Harbor.Tagd.Tests
 		[Theory, AutoData]
 		public async Task GetAllProjects_Valid(List<Project> projects)
 		{
+			await MockSession();
+
 			_http.RespondWithJson(projects);
 
 			var result = (await client.GetAllProjects()).ToList();
@@ -122,6 +124,8 @@ namespace Harbor.Tagd.Tests
 		[Theory, AutoData]
 		public async Task GetRepositories(int project, List<Repository> repos)
 		{
+			await MockSession();
+
 			_http.RespondWithJson(repos);
 
 			var result = (await client.GetRepositories(project)).ToList();
@@ -134,6 +138,8 @@ namespace Harbor.Tagd.Tests
 		[Theory, AutoData]
 		public async Task GetAllTags(string r, string p, List<Tag> tags)
 		{
+			await MockSession();
+
 			_http.RespondWithJson(tags);
 
 			foreach (var t in tags)
@@ -151,6 +157,8 @@ namespace Harbor.Tagd.Tests
 		[Theory, AutoData]
 		public async Task GetAllTags_ThrowsForMalformedRepo(string repo)
 		{
+			await MockSession();
+
 			try
 			{
 				await client.GetTags(repo);
@@ -160,13 +168,15 @@ namespace Harbor.Tagd.Tests
 			{
 				Assert.IsAssignableFrom<ArgumentException>(ex);
 				Assert.Matches("Illegal Repository Path.*", ex.Message);
-				_http.ShouldNotHaveCalled("*");
+				_http.ShouldNotHaveCalled("*api/repositories*");
 			}
 		}
 
 		[Theory, AutoData]
 		public async Task DeleteTag(string r, string p, string tag)
 		{
+			await MockSession();
+
 			await client.DeleteTag($"{r}/{p}", tag);
 			_http.ShouldHaveCalled($"*/api/repositories/{r}/{p}/tags/{tag}").WithVerb(HttpMethod.Delete).Times(1);
 		}
@@ -174,6 +184,8 @@ namespace Harbor.Tagd.Tests
 		[Theory, AutoData]
 		public async Task DeleteTag_ThrowsForMalformedRepo(string repo, string tag)
 		{
+			await MockSession();
+
 			try
 			{
 				await client.DeleteTag(repo, tag);
@@ -183,15 +195,22 @@ namespace Harbor.Tagd.Tests
 			{
 				Assert.IsAssignableFrom<ArgumentException>(ex);
 				Assert.Matches("Illegal Repository Path.*", ex.Message);
-				_http.ShouldNotHaveCalled("*");
+				_http.ShouldNotHaveCalled("*/api/repositories*");
 			}
+		}
+
+		[Theory, AutoData]
+		public async Task ThrowsForNotLoggedIn(string repo, string tag) =>
+			await Assert.ThrowsAsync<InvalidOperationException>(async () => await client.DeleteTag(repo, tag));
+
+		protected async Task MockSession()
+		{
+			ConfigureAuthToken("mockToken");
+			await client.Login("mockUser", "mockPassword");
 		}
 
 		protected void ConfigureAuthToken(string token) => _http.RespondWith("", cookies: new { beegosessionID = token });
 
-		public void Dispose()
-		{
-			_http.Dispose();
-		}
+		public void Dispose() => _http.Dispose();
 	}
 }

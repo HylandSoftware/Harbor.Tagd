@@ -60,7 +60,7 @@ namespace Harbor.Tagd
 
 				logLevel.MinimumLevel = ParseVerbosity(settings.Verbosity);
 
-				var ruleProvider = settings.ConfigFile.IsNullOrEmpty() ?
+				var ruleProvider = string.IsNullOrEmpty(settings.ConfigFile) ?
 					new ConfigServerRuleProvider(
 						new ConfigServerClientSettings
 						{
@@ -120,10 +120,10 @@ namespace Harbor.Tagd
 			Log.Information("Finished in {elapsed}", sw.Elapsed);
 		}
 
-		private static string NormalizeEndpointUrl(string endpoint) =>
+		internal static string NormalizeEndpointUrl(string endpoint) =>
 			(endpoint.ToLower().StartsWith("http") ? endpoint : $"https://{endpoint}").TrimEnd('/');
 
-		private static LogEventLevel ParseVerbosity(string verbosity)
+		internal static LogEventLevel ParseVerbosity(string verbosity)
 		{
 			switch(verbosity?.ToLower())
 			{
