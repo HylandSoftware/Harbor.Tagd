@@ -2,7 +2,6 @@
 using Harbor.Tagd.API;
 using Harbor.Tagd.API.Models;
 using Harbor.Tagd.Args;
-using Harbor.Tagd.Extensions;
 using Harbor.Tagd.Notifications;
 using Harbor.Tagd.Rules;
 using Harbor.Tagd.Util;
