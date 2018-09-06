@@ -62,22 +62,19 @@ namespace Harbor.Tagd
 				await _harbor.Login(_settings.Username, _settings.Password);
 
 				var ignoredProjects = 0;
-
-				var tasks = new List<Task<int>>();
+				var ignoredRepos = 0;
 				foreach(var p in await _harbor.GetAllProjects())
 				{
-					if (ShouldExcludeProject(p))
+					if(ShouldExcludeProject(p))
 					{
 						Log.Verbose("Skipping project {@project}", p.Name);
 						ignoredProjects++;
 					}
 					else
 					{
-						tasks.Add(ProcessProject(p, _ruleSet.Rules.Where(rule => p.Name.Matches(rule.Project))));
+						ignoredRepos += await ProcessProject(p, _ruleSet.Rules.Where(rule => p.Name.Matches(rule.Project)));
 					}
-				};
-
-				var ignoredRepos = (await Task.WhenAll(tasks)).Sum();
+				}
 
 				FilterDuplicateTagReferences();
 
@@ -119,22 +116,18 @@ namespace Harbor.Tagd
 			Log.Information("Processing project {@project}", p);
 
 			var ignoredRepos = 0;
-
-			var tasks = new List<Task>();
 			foreach(var r in await _harbor.GetRepositories(p.Id))
 			{
-				if (ShouldExcludeRepository(r))
+				if(ShouldExcludeRepository(r))
 				{
 					Log.Verbose("Skipping repository {@repository}", r);
 					ignoredRepos++;
 				}
 				else
 				{
-					tasks.Add(ProcessRepository(r, projectRules.Where(rule => r.Name.Matches(rule.Repo))));
+					await ProcessRepository(r, projectRules.Where(rule => r.Name.Matches(rule.Repo)));
 				}
-			};
-
-			await Task.WhenAll(tasks);
+			}
 
 			return ignoredRepos;
 		}
