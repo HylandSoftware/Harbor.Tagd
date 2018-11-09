@@ -47,26 +47,26 @@ actually delete tags, invoke with `--destructive`.
 ### Usage
 
 ```text
-Usage: Harbor.Tagd [ -h|--help ] [ --version ] --endpoint  -u|--user U -p|--password P [ --destructive ] [ --notify-slack  ] [ -v|--verbosity V ] [ --config-file  ] [ --config-server  ] [
---config-user  ] [ --config-password  ]
+Usage: Harbor.Tagd [ -h|--help ] [ --version ] --endpoint  -u|--user U -p|--password P [ --destructive ] [ --notify-slack  ] [ -v|--verbosity V ] [ --config-file  ] [ --config-server  ] [ --config-user  ] [ --config-password  ] [ --insecure-disable-certificate-validation ]
 
  Tag Cleanup daemon for VMware Harbor Registries
 
 Required Arguments:
- --endpoint         The harbor registry to connect to
- -p, --password     The password for the user connecting to harbor
- -u, --user         The user to connect to harbor as
+ --endpoint                                 The harbor registry to connect to
+ -p, --password                             The password for the user connecting to harbor
+ -u, --user                                 The user to connect to harbor as
 
 Optional Arguments:
- --destructive      Actually delete tags instead of generating a report
- --notify-slack     Post results to this slack-compatible webhook
- --config-file      The config file to parse
- --config-server    The springboot config server to get configuration from
- --config-user      The user to login to the springboot config server as
- --config-password  The password for the springboot config server user
- -h, --help         Display this help document.
- -v, --verbosity    How verbose should logging output be
- --version          Displays the version of the current executable.
+ --destructive                              Actually delete tags instead of generating a report
+ --notify-slack                             Post results to this slack-compatible webhook
+ --config-file                              The config file to parse
+ --config-server                            The springboot config server to get configuration from
+ --config-user                              The user to login to the springboot config server as
+ --config-password                          The password for the springboot config server user
+ --insecure-disable-certificate-validation  Don't validate server certificates for Harbor
+ -h, --help                                 Display this help document.
+ -v, --verbosity                            How verbose should logging output be
+ --version                                  Displays the version of the current executable.
 ```
 
 If no value is provided for `--password` you will be prompted to enter a masked password:
@@ -120,18 +120,19 @@ $ dotnet .\dist\Harbor.Tagd.dll check --config-file rules.yml --verbosity verbos
 #### Usage
 
 ```bash
-Usage: Harbor.Tagd check [ -h|--help ] [ --version ] [ -v|--verbosity V ] [ --config-file  ] [ --config-server  ] [ --config-user  ] [ --config-password  ]
+Usage: Harbor.Tagd [ -h|--help ] [ --version ] [ -v|--verbosity V ] [ --config-file  ] [ --config-server  ] [ --config-user  ] [ --config-password  ] [ --insecure-disable-certificate-validation ]
 
  Load and validate rules
 
 Optional Arguments:
- --config-file      The config file to parse
- --config-server    The springboot config server to get configuration from
- --config-user      The user to login to the springboot config server as
- --config-password  The password for the springboot config server user
- -h, --help         Display this help document.
- -v, --verbosity    How verbose should logging output be
- --version          Displays the version of the current executable.
+ --config-file                              The config file to parse
+ --config-server                            The springboot config server to get configuration from
+ --config-user                              The user to login to the springboot config server as
+ --config-password                          The password for the springboot config server user
+ --insecure-disable-certificate-validation  Don't validate server certificates for Harbor
+ -h, --help                                 Display this help document.
+ -v, --verbosity                            How verbose should logging output be
+ --version                                  Displays the version of the current executable.
 ```
 
 ## License
