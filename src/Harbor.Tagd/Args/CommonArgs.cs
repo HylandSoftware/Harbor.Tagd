@@ -23,5 +23,8 @@ namespace Harbor.Tagd.Args
 
 		[NamedArgument("config-password", Description = "The password for the springboot config server user")]
 		public string ConfigPassword { get; set; }
+
+		[NamedArgument("insecure-disable-certificate-validation", Description = "Don't validate server certificates for Harbor", Action = ParseAction.StoreTrue)]
+		public bool DisableCertificateValidation { get; set; }
 	}
 }

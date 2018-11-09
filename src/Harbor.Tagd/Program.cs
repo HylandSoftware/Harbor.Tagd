@@ -2,7 +2,6 @@
 using Harbor.Tagd.API;
 using Harbor.Tagd.API.Models;
 using Harbor.Tagd.Args;
-using Harbor.Tagd.Extensions;
 using Harbor.Tagd.Notifications;
 using Harbor.Tagd.Rules;
 using Harbor.Tagd.Util;
@@ -15,6 +14,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Flurl.Http;
 
 [assembly: InternalsVisibleTo("Harbor.Tagd.Tests")]
 
@@ -79,6 +79,12 @@ namespace Harbor.Tagd
 						},
 						new SerilogLoggerFactory()
 					) : (IRuleProvider) new FilesystemRuleProvider(settings.ConfigFile);
+
+				if (settings.DisableCertificateValidation)
+				{
+					Log.Warning("Ignoring Certificate Errors");
+					FlurlHttp.Configure(f => f.HttpClientFactory = new InsecureHttpClientFactory());
+				}
 
 				if (check)
 				{
