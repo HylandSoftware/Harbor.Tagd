@@ -20,6 +20,7 @@ namespace Harbor.Tagd.Tests
 		{
 			_http = new HttpTest();
 			client = new HarborClient("http://localhost:5555/");
+			_http.RespondWithJson(new SystemInfo {Version = "v1.6.3-abcdef12"});
 		}
 
 		[Theory, AutoData]
@@ -34,6 +35,19 @@ namespace Harbor.Tagd.Tests
 		}
 
 		[Theory, AutoData]
+		public async Task CanLoginOn170(string token, string user, string password)
+		{
+			_http.ResponseQueue.Clear();
+			_http.RespondWithJson(new SystemInfo {Version = "v1.7.0-rc.0"});
+			_http.RespondWith("", cookies: new {sid = token});
+
+			await client.Login(user, password);
+			
+			Assert.Equal(token, client.SessionToken);
+			_http.ShouldHaveCalled("*/c/login").WithVerb(HttpMethod.Post).WithRequestBody($"principal={user}&password={password}").Times(1);
+		}
+
+		[Theory, AutoData]
 		public async Task SendsSessionCookieWhenLoggedIn(string token, string user, string password, IEnumerable<Project> projects)
 		{
 			ConfigureAuthToken(token);
@@ -43,6 +57,20 @@ namespace Harbor.Tagd.Tests
 			await client.GetAllProjects();
 
 			_http.ShouldHaveCalled("*").WithHeader("Cookie", $"*beegosessionID={token}*");
+		}
+		
+		[Theory, AutoData]
+		public async Task SendsSessionCookieWhenLoggedIn170(string token, string user, string password, IEnumerable<Project> projects)
+		{
+			_http.ResponseQueue.Clear();
+			_http.RespondWithJson(new SystemInfo {Version = "v1.7.0-rc.0"});
+			_http.RespondWith("", cookies: new {sid = token});
+			_http.RespondWithJson(projects);
+
+			await client.Login(user, password);
+			await client.GetAllProjects();
+
+			_http.ShouldHaveCalled("*").WithHeader("Cookie", $"*sid={token}*");
 		}
 
 		[Theory, AutoData]

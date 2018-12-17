@@ -6,13 +6,19 @@ using Flurl;
 using Flurl.Http;
 using Harbor.Tagd.API.Models;
 using Harbor.Tagd.API.Support;
+using SemVer;
+using Serilog;
+using Version = SemVer.Version;
 
 namespace Harbor.Tagd.API
 {
 	internal class HarborClient : IHarborClient
 	{
 		private const string SESSION_COOKIE_KEY = "beegosessionID";
+		private const string NEW_SESSION_COOKIE_KEY = "sid";
+		private readonly Range _loginRefactorVersion = new Range(">=1.7.0");
 
+		private string sessionTokenName;
 		private Cookie sessionToken;
 
 		public string SessionToken { get { return sessionToken?.Value; } }
@@ -31,11 +37,34 @@ namespace Harbor.Tagd.API
 
 			return request;
 		}
+		
+		private async Task<Version> ProbeVersion()
+		{
+			var info = await Endpoint.AppendPathSegments("api", "systeminfo").GetJsonAsync<SystemInfo>();
+			return new Version(info.Version.Substring(1, info.Version.IndexOf("-")-1));
+		}
 
 		public async Task Login(string user, string password)
 		{
-			var client = Endpoint.AppendPathSegment("login").AllowAnyHttpStatus().EnableCookies();
+			Url path;
+
+			var v = await ProbeVersion();
+			if (_loginRefactorVersion.IsSatisfied(v))
+			{
+				Log.Debug("Newer version of harbor found, using 1.7.0+ login route");
+				path = Endpoint.AppendPathSegments("c", "login");
+				sessionTokenName = NEW_SESSION_COOKIE_KEY;
+			}
+			else
+			{
+				Log.Debug("Older version of harbor found, using pre-1.7.0 login route");
+				path = Endpoint.AppendPathSegment("login");
+				sessionTokenName = SESSION_COOKIE_KEY;
+			}
+
+			var client = path.AllowAnyHttpStatus().EnableCookies();
 			var response = await client.PostUrlEncodedAsync(new { principal = user, password = password });
+			
 			try
 			{
 				response.EnsureSuccessStatusCode();
@@ -52,7 +81,7 @@ namespace Harbor.Tagd.API
 				}
 			}
 
-			sessionToken = client.Cookies[SESSION_COOKIE_KEY] ?? throw new Exception("Failed to parse session token");
+			sessionToken = client.Cookies[sessionTokenName] ?? throw new Exception("Failed to parse session token");
 		}
 
 		public async Task Logout()
