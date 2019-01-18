@@ -86,6 +86,8 @@ namespace Harbor.Tagd
 					FlurlHttp.Configure(f => f.HttpClientFactory = new InsecureHttpClientFactory());
 				}
 
+				FlurlHttp.Configure(f => f.Timeout = System.TimeSpan.FromSeconds(settings.Timeout) );
+
 				if (check)
 				{
 					ruleProvider.Load().Check();
@@ -153,7 +155,7 @@ namespace Harbor.Tagd
 
 				case "f":
 				case "fatal": return LogEventLevel.Fatal;
-				
+
 				default:  throw new ArgumentException($"Unknown log level {verbosity}", nameof(verbosity));
 			}
 		}
