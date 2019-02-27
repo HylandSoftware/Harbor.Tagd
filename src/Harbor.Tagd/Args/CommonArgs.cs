@@ -10,6 +10,9 @@ namespace Harbor.Tagd.Args
 		[NamedArgument('v', "verbosity", Description = "How verbose should logging output be")]
 		public string Verbosity { get; set; } = "info";
 
+		[NamedArgument("timeout", Description = "Timeout in seconds for http requests, defaults to 600")]
+		public int Timeout { get; set; } = 600;
+
 		[NamedArgument("config-file", Description = "The config file to parse")]
 		[MutuallyExclusiveGroup(CONFIG_METHOD, Required = true)]
 		public string ConfigFile { get; set; }
