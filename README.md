@@ -6,6 +6,17 @@
 registries. You can override the default policy to be more or less specific for
 projects and repositories if needed.
 
+## Supported Versions
+
+| `tagd` Version | `harbor` Version |
+| -------------- | ---------------- |
+| <= `1.7.2`     | `1.3.0` to `1.6` |
+| `1.7.2`+       | Latest Public Release |
+
+`tagd` works with Harbor `1.3.0` and later. Starting in `tagd` `1.7.2`,
+`tagd` also supports `harbor` `1.7.0`+, and is required for versions of
+`harbor` `1.7.0`+ due to a change in the Harbor API.
+
 ## Building
 
 You need version 2.0 or later of the dotnet core SDK.
