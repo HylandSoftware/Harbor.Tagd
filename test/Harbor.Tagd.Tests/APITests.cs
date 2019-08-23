@@ -19,7 +19,7 @@ namespace Harbor.Tagd.Tests
 		public APITests()
 		{
 			_http = new HttpTest();
-			client = new HarborClient("http://localhost:5555/");
+			client = new HarborClient("http://localhost:5555/", LoginBehavior.Probe);
 			_http.RespondWithJson(new SystemInfo {Version = "v1.6.3-abcdef12"});
 		}
 
@@ -35,6 +35,21 @@ namespace Harbor.Tagd.Tests
 		}
 
 		[Theory, AutoData]
+		public async Task CanLoginWhenForced(string token, string user, string password)
+		{
+			_http.ResponseQueue.Clear();
+
+			var sut = new HarborClient("http://localhost:5555/", LoginBehavior.ForcePre17);
+			ConfigureAuthToken(token);
+
+			await sut.Login(user, password);
+
+			Assert.Equal(token, sut.SessionToken);
+			_http.ShouldHaveCalled("*/login").WithVerb(HttpMethod.Post).WithRequestBody($"principal={user}&password={password}").Times(1);
+			_http.ShouldNotHaveCalled("*/api/systeminfo");
+		}
+
+		[Theory, AutoData]
 		public async Task CanLoginOn170(string token, string user, string password)
 		{
 			_http.ResponseQueue.Clear();
@@ -45,6 +60,20 @@ namespace Harbor.Tagd.Tests
 			
 			Assert.Equal(token, client.SessionToken);
 			_http.ShouldHaveCalled("*/c/login").WithVerb(HttpMethod.Post).WithRequestBody($"principal={user}&password={password}").Times(1);
+		}
+
+		[Theory, AutoData]
+		public async Task CanLoginOn170WhenForced(string token, string user, string password)
+		{
+			_http.ResponseQueue.Clear();
+			_http.RespondWith("", cookies: new { sid = token });
+
+			var sut = new HarborClient("http://localhost:5555/", LoginBehavior.ForcePost17);
+			await sut.Login(user, password);
+
+			Assert.Equal(token, sut.SessionToken);
+			_http.ShouldHaveCalled("*/c/login").WithVerb(HttpMethod.Post).WithRequestBody($"principal={user}&password={password}").Times(1);
+			_http.ShouldNotHaveCalled("*/api/systeminfo");
 		}
 
 		[Theory, AutoData]
