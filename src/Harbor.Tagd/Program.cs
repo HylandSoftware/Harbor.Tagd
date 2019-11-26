@@ -29,7 +29,7 @@ namespace Harbor.Tagd
 #endif
 		private const string APPLICATION_NAME = "tagd";
 
-		public static async Task Main(string[] args)
+		public static async Task<int> Main(string[] args)
 		{
 			var logLevel = new LoggingLevelSwitch(LogEventLevel.Information);
 
@@ -105,11 +105,14 @@ namespace Harbor.Tagd
 			catch(Exception ex)
 			{
 				Log.Fatal(ex, "An Error was encountered while processing tags");
+				return 1;
 			}
 			finally
 			{
 				Log.CloseAndFlush();
 			}
+
+			return 0;
 		}
 
 		private static async Task DoClean(ApplicationSettings appSettings, IRuleProvider rules)
