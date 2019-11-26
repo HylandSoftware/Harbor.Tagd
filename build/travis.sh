@@ -7,7 +7,7 @@ IMAGE_TAG=ci
 
 if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then
     CAKE_TASK=Docker::Push
-    docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}"
+    echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
 
     IMAGE_TAG=$(docker run -it --rm -v "$(pwd):/repo" gittools/gitversion-dotnetcore:linux-4.0.1 /repo /showvariable FullSemVer)
 
