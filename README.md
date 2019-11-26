@@ -2,6 +2,11 @@
 
 [![Build Status](https://travis-ci.org/HylandSoftware/Harbor.Tagd.svg?branch=master)](https://travis-ci.org/HylandSoftware/Harbor.Tagd) [![Coverage Status](https://coveralls.io/repos/github/HylandSoftware/Harbor.Tagd/badge.svg?branch=master)](https://coveralls.io/github/HylandSoftware/Harbor.Tagd?branch=master)
 
+> **NOTE** Much of the functionality of `tagd` is now available natively in
+> Harbor 1.9. Please consider migrating your retention policies to Harbor
+> instead of using `tagd`. See the [Harbor Documentation](https://github.com/goharbor/harbor/blob/master/docs/user_guide.md#tag-retention-rules)
+> for more details.
+
 `tagd` automates the process of cleaning up old tags from your Harbor container
 registries. You can override the default policy to be more or less specific for
 projects and repositories if needed.
