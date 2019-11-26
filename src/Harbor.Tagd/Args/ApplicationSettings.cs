@@ -1,4 +1,5 @@
 ﻿using clipr;
+using Harbor.Tagd.API;
 
 namespace Harbor.Tagd.Args
 {
@@ -23,5 +24,8 @@ namespace Harbor.Tagd.Args
 
 		[NamedArgument("notify-slack", Description = "Post results to this slack-compatible webhook")]
 		public string SlackWebhook { get; set; }
+
+        [NamedArgument("login-behavior", Description = "The login behavior to use. By default, tagd will try to determine what version of harbor it is connecting to in order to determine how to log in. Options: Probe, ForcePre17, ForcePost17")]
+        public LoginBehavior LoginBehavior { get; set; } = LoginBehavior.Probe;
 	}
 }

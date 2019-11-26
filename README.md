@@ -22,6 +22,16 @@ projects and repositories if needed.
 `tagd` also supports `harbor` `1.7.0`+, and is required for versions of
 `harbor` `1.7.0`+ due to a change in the Harbor API.
 
+If you are running a non-release build of harbor, or if your harbor
+installation blocks the `/api/systeminfo` endpoint, you will need to
+set the `--login-behavior` flag appropriately:
+
+| Flag | Description |
+| --- | --- |
+| `--login-behavior Probe` | Detect the version of harbor by probing the `/api/systeminfo` endpoint. This is the default behavior |
+| `--login-behavior ForcePre17` | Assume the version of harbor is older than 1.7 |
+| `--login-behavior ForcePost17` | Assume the version of harbor is 1.7 or newer |
+
 ## Building
 
 You need version 2.0 or later of the dotnet core SDK.
@@ -63,7 +73,7 @@ actually delete tags, invoke with `--destructive`.
 ### Usage
 
 ```text
-Usage: Harbor.Tagd [ -h|--help ] [ --version ] --endpoint  -u|--user U -p|--password P [ --destructive ] [ --notify-slack  ] [ -v|--verbosity V ] [ --config-file  ] [ --config-server  ] [ --config-user  ] [ --config-password  ] [ --insecure-disable-certificate-validation ]
+Usage: Harbor.Tagd [ -h|--help ] [ --version ] --endpoint  -u|--user U -p|--password P [ --destructive ] [ --notify-slack  ] [ --login-behavior ] [ -v|--verbosity V ] [ --timeout  ] [ --config-file  ] [ --config-server  ] [ --config-user  ] [ --config-password  ] [ --insecure-disable-certificate-validation ]
 
  Tag Cleanup daemon for VMware Harbor Registries
 
@@ -75,6 +85,8 @@ Required Arguments:
 Optional Arguments:
  --destructive                              Actually delete tags instead of generating a report
  --notify-slack                             Post results to this slack-compatible webhook
+ --login-behavior                           The login behavior to use. By default, tagd will try to determine what version of harbor it is connecting to in order to determine how to log in. Options: Probe, ForcePre17, ForcePost17
+ --timeout                                  Timeout in seconds for http requests, defaults to 600
  --config-file                              The config file to parse
  --config-server                            The springboot config server to get configuration from
  --config-user                              The user to login to the springboot config server as
@@ -136,11 +148,12 @@ $ dotnet .\dist\Harbor.Tagd.dll check --config-file rules.yml --verbosity verbos
 #### Usage
 
 ```bash
-Usage: Harbor.Tagd [ -h|--help ] [ --version ] [ -v|--verbosity V ] [ --config-file  ] [ --config-server  ] [ --config-user  ] [ --config-password  ] [ --insecure-disable-certificate-validation ]
+Usage: Harbor.Tagd [ -h|--help ] [ --version ] [ -v|--verbosity V ] [ --timeout  ] [ --config-file  ] [ --config-server  ] [ --config-user  ] [ --config-password  ] [ --insecure-disable-certificate-validation ]
 
  Load and validate rules
 
 Optional Arguments:
+ --timeout                                  Timeout in seconds for http requests, defaults to 600
  --config-file                              The config file to parse
  --config-server                            The springboot config server to get configuration from
  --config-user                              The user to login to the springboot config server as

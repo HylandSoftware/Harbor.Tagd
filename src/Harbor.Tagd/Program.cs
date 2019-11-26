@@ -118,7 +118,7 @@ namespace Harbor.Tagd
 		private static async Task DoClean(ApplicationSettings appSettings, IRuleProvider rules)
 		{
 			var engine = new TagEngine(
-				new HarborClient(NormalizeEndpointUrl(appSettings.Endpoint)),
+				new HarborClient(NormalizeEndpointUrl(appSettings.Endpoint), appSettings.LoginBehavior),
 				appSettings,
 				Log.ForContext<TagEngine>(),
 				rules,

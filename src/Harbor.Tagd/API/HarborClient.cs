@@ -16,7 +16,9 @@ namespace Harbor.Tagd.API
 	{
 		private const string SESSION_COOKIE_KEY = "beegosessionID";
 		private const string NEW_SESSION_COOKIE_KEY = "sid";
+
 		private readonly Range _loginRefactorVersion = new Range(">=1.7.0");
+		private readonly LoginBehavior _loginBehavior;
 
 		private string sessionTokenName;
 		private Cookie sessionToken;
@@ -24,7 +26,11 @@ namespace Harbor.Tagd.API
 		public string SessionToken { get { return sessionToken?.Value; } }
 		public string Endpoint { get; }
 
-		public HarborClient(string endpoint) => Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+		public HarborClient(string endpoint, LoginBehavior loginBehavior)
+		{
+			_loginBehavior = loginBehavior;
+			Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+		}
 
 		private IFlurlRequest CreateCall()
 		{
@@ -46,9 +52,39 @@ namespace Harbor.Tagd.API
 
 		public async Task Login(string user, string password)
 		{
-			Url path;
+			Version v;
+			switch(_loginBehavior)
+			{
+				case LoginBehavior.Probe:
+					Log.Debug("Detecting Harbor Version");
+					try
+					{
+						v = await ProbeVersion();
+					}
+					catch(Exception ex)
+					{
+						Log.Error(ex, "Unable to detect the version of harbor. If your deployment blocks /api/systeminfo or you are running a non-release version you may need to adjust the --login-behavior depending on your version of harbor");
+						throw;
+					}
+					break;
+				case LoginBehavior.ForcePost17:
+					Log.Debug("Forcing Post 1.7.0 Login Route");
+					v = new Version(1, 7, 0);
+					break;
+				case LoginBehavior.ForcePre17:
+					Log.Debug("Forcing Pre 1.7.0 Login Route");
+					v = new Version(1, 6, 0);
+					break;
+				default:
+					throw new ArgumentException("Unknown Login Behavior");
+			}
 
-			var v = await ProbeVersion();
+			await DoLoginFor(v, user, password);
+		}
+
+		private async Task DoLoginFor(Version v, string user, string password)
+		{
+			Url path;
 			if (_loginRefactorVersion.IsSatisfied(v))
 			{
 				Log.Debug("Newer version of harbor found, using 1.7.0+ login route");
@@ -64,7 +100,7 @@ namespace Harbor.Tagd.API
 
 			var client = path.AllowAnyHttpStatus().EnableCookies();
 			var response = await client.PostUrlEncodedAsync(new { principal = user, password = password });
-			
+
 			try
 			{
 				response.EnsureSuccessStatusCode();
